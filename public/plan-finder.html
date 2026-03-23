@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verizon Home Internet</title>
+<style>
+  :root {
+    --vz-red: #EE0000;
+    --vz-red-dark: #CC0000;
+    --vz-black: #000000;
+    --vz-white: #FFFFFF;
+    --vz-gray-100: #F6F6F6;
+    --vz-gray-200: #D8DADA;
+    --vz-gray-400: #959595;
+    --vz-gray-600: #6F7171;
+    --vz-gray-800: #333333;
+    --bg: var(--vz-black);
+    --text: var(--vz-white);
+    --text-muted: var(--vz-gray-400);
+    --card-bg: #1A1A1A;
+    --card-border: #333333;
+    --card-hover: #222222;
+    --badge-bg: #2A2A2A;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: var(--vz-white);
+      --text: var(--vz-black);
+      --text-muted: var(--vz-gray-600);
+      --card-bg: var(--vz-gray-100);
+      --card-border: var(--vz-gray-200);
+      --card-hover: #EEEEEE;
+      --badge-bg: var(--vz-gray-200);
+    }
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Verizon NHG DS", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 16px;
+    line-height: 1.5;
+    font-size: 14px;
+  }
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--vz-red);
+  }
+  .header svg { flex-shrink: 0; }
+  .header h1 { font-size: 18px; font-weight: 700; }
+  .header .subtitle { font-size: 12px; color: var(--text-muted); }
+  .address-bar {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .address-bar strong { color: var(--text); }
+  .type-pills {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .type-pill {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 1px solid var(--card-border);
+    background: var(--card-bg);
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .type-pill.active, .type-pill:hover {
+    background: var(--vz-red);
+    border-color: var(--vz-red);
+    color: #fff;
+  }
+  .plans-grid { display: flex; flex-direction: column; gap: 12px; }
+  .plan-card {
+    background: var(--card-bg);
+    border: 2px solid var(--card-border);
+    border-radius: 12px;
+    padding: 16px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    cursor: pointer;
+    position: relative;
+  }
+  .plan-card:hover, .plan-card:focus-within {
+    border-color: var(--vz-red);
+    box-shadow: 0 0 0 1px var(--vz-red);
+  }
+  .plan-card.selected {
+    border-color: var(--vz-red);
+    box-shadow: 0 0 0 2px var(--vz-red);
+  }
+  .plan-card .popular-badge {
+    position: absolute;
+    top: -1px;
+    right: 16px;
+    background: var(--vz-red);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 0 0 6px 6px;
+    letter-spacing: 0.5px;
+  }
+  .plan-name { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+  .plan-speed {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+  .plan-speed .speed-value { color: var(--vz-red); font-weight: 700; font-size: 14px; }
+  .plan-prices { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; }
+  .price-main { font-size: 28px; font-weight: 700; }
+  .price-main .currency { font-size: 16px; vertical-align: super; }
+  .price-main .period { font-size: 13px; font-weight: 400; color: var(--text-muted); }
+  .price-original {
+    font-size: 14px;
+    color: var(--text-muted);
+    text-decoration: line-through;
+  }
+  .price-note { font-size: 11px; color: var(--text-muted); }
+  .plan-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .tag {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: var(--badge-bg);
+    color: var(--text);
+    white-space: nowrap;
+  }
+  .tag.promo {
+    background: #3D1200;
+    color: #FF9966;
+  }
+  @media (prefers-color-scheme: light) {
+    .tag.promo { background: #FFF0E6; color: #CC4400; }
+  }
+  .plan-best-for { font-size: 12px; color: var(--text-muted); }
+  .plan-select-btn {
+    display: block;
+    width: 100%;
+    margin-top: 12px;
+    padding: 10px;
+    background: var(--vz-red);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .plan-select-btn:hover, .plan-select-btn:focus { background: var(--vz-red-dark); }
+  .plan-select-btn:focus { outline: 2px solid var(--vz-red); outline-offset: 2px; }
+
+  /* ── Cost Calculator ── */
+  .calculator {
+    margin-top: 20px;
+    background: var(--card-bg);
+    border: 2px solid var(--vz-red);
+    border-radius: 12px;
+    padding: 16px;
+    display: none;
+  }
+  .calculator.visible { display: block; }
+  .calc-title { font-size: 16px; font-weight: 700; margin-bottom: 12px; }
+  .calc-plan-name { color: var(--vz-red); }
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .toggle-label { font-size: 13px; }
+  .toggle {
+    position: relative;
+    width: 44px;
+    height: 24px;
+  }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .toggle-slider {
+    position: absolute;
+    inset: 0;
+    background: var(--card-border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .toggle-slider::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform 0.2s;
+  }
+  .toggle input:checked + .toggle-slider { background: var(--vz-red); }
+  .toggle input:checked + .toggle-slider::after { transform: translateX(20px); }
+  .toggle input:focus + .toggle-slider { box-shadow: 0 0 0 2px var(--vz-red); }
+  .perks-section { margin-bottom: 12px; }
+  .perks-title { font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+  .perk-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    font-size: 13px;
+  }
+  .perk-row input[type="checkbox"] { accent-color: var(--vz-red); }
+  .perk-price { margin-left: auto; color: var(--text-muted); font-size: 12px; }
+  .perk-free { color: #00AA00; font-weight: 600; }
+  .cost-summary {
+    border-top: 1px solid var(--card-border);
+    padding-top: 12px;
+    margin-top: 8px;
+  }
+  .cost-line {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    margin-bottom: 4px;
+  }
+  .cost-line.discount { color: #00AA00; }
+  .cost-line.total {
+    font-size: 18px;
+    font-weight: 700;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--card-border);
+  }
+  .savings-callout {
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: #1A3300;
+    color: #88DD44;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  @media (prefers-color-scheme: light) {
+    .savings-callout { background: #E8FFE0; color: #227700; }
+  }
+
+  /* ── Order Summary ── */
+  .order-summary {
+    margin-top: 16px;
+    display: none;
+  }
+  .order-summary.visible { display: block; }
+  .order-card {
+    background: var(--card-bg);
+    border: 2px solid var(--card-border);
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .order-title { font-size: 16px; font-weight: 700; margin-bottom: 12px; }
+  .order-detail { font-size: 13px; margin-bottom: 4px; color: var(--text-muted); }
+  .order-detail strong { color: var(--text); }
+  .order-includes { list-style: none; margin: 8px 0; }
+  .order-includes li { font-size: 12px; padding: 2px 0; }
+  .order-includes li::before { content: "\2713 "; color: #00AA00; font-weight: bold; }
+  .checkout-btn {
+    display: block;
+    width: 100%;
+    margin-top: 14px;
+    padding: 14px;
+    background: var(--vz-red);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  .checkout-btn:hover, .checkout-btn:focus { background: var(--vz-red-dark); }
+  .disclaimer {
+    margin-top: 10px;
+    font-size: 10px;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+
+  .loading {
+    text-align: center;
+    padding: 40px 0;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+  .loading .spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--card-border);
+    border-top-color: var(--vz-red);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 12px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .promo-banner {
+    background: #3D1200;
+    border: 1px solid #663300;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 12px;
+    font-size: 12px;
+    color: #FF9966;
+  }
+  @media (prefers-color-scheme: light) {
+    .promo-banner { background: #FFF8F0; border-color: #FFD4A8; color: #884400; }
+  }
+  .promo-banner strong { display: block; margin-bottom: 2px; font-size: 13px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+    <rect width="28" height="28" rx="6" fill="#EE0000"/>
+    <path d="M6 14.5L11 19.5L22 8.5" stroke="#FFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <div>
+    <h1>Verizon Home Internet</h1>
+    <div class="subtitle">Find the perfect plan for your home</div>
+  </div>
+</div>
+
+<div id="loading" class="loading">
+  <div class="spinner"></div>
+  Checking available plans...
+</div>
+
+<div id="content" style="display:none;">
+  <div id="address-bar" class="address-bar" style="display:none;"></div>
+  <div id="promos-area"></div>
+  <div id="type-pills" class="type-pills"></div>
+  <div id="plans-grid" class="plans-grid"></div>
+  <div id="calculator" class="calculator"></div>
+  <div id="order-summary" class="order-summary"></div>
+</div>
+
+<script>
+(function() {
+  let state = {
+    plans: [],
+    promotions: [],
+    addOnPerks: [],
+    availableTypes: [],
+    address: "",
+    activeFilter: "all",
+    selectedPlanId: null,
+    hasMobile: false,
+    selectedPerks: [],
+  };
+
+  // ── MCP Bridge ──
+  window.addEventListener("message", (event) => {
+    const data = event.data;
+    if (!data) return;
+
+    if (data.method === "ui/notifications/tool-result" && data.params) {
+      handleToolResult(data.params);
+    }
+    if (data.method === "ui/notifications/tool-input") {
+      showLoading();
+    }
+  });
+
+  function callTool(name, args) {
+    window.parent.postMessage({
+      jsonrpc: "2.0",
+      method: "tools/call",
+      params: { name, arguments: args },
+      id: Date.now()
+    }, "*");
+  }
+
+  function updateModelContext(ctx) {
+    window.parent.postMessage({
+      jsonrpc: "2.0",
+      method: "ui/update-model-context",
+      params: { context: ctx }
+    }, "*");
+  }
+
+  function handleToolResult(params) {
+    const sc = params.structuredContent || params;
+    if (sc.plans) {
+      state.plans = sc.plans;
+      state.promotions = sc.promotions || state.promotions;
+      state.addOnPerks = sc.add_on_perks || state.addOnPerks;
+      if (sc.available_types) state.availableTypes = sc.available_types;
+      if (sc.address_formatted) state.address = sc.address_formatted;
+      renderAll();
+    }
+    if (sc.order_summary) {
+      renderOrderSummary(sc);
+    }
+  }
+
+  // ── Render ──
+  function showLoading() {
+    document.getElementById("loading").style.display = "block";
+    document.getElementById("content").style.display = "none";
+  }
+
+  function renderAll() {
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("content").style.display = "block";
+
+    renderAddress();
+    renderPromos();
+    renderTypePills();
+    renderPlans();
+  }
+
+  function renderAddress() {
+    const el = document.getElementById("address-bar");
+    if (state.address) {
+      el.style.display = "block";
+      el.innerHTML = `<strong>${state.address}</strong> &mdash; ${state.availableTypes.map(t => t.toUpperCase()).join(", ")} available`;
+    }
+  }
+
+  function renderPromos() {
+    const area = document.getElementById("promos-area");
+    if (!state.promotions.length) { area.innerHTML = ""; return; }
+    area.innerHTML = state.promotions.map(p =>
+      `<div class="promo-banner"><strong>${p.title}</strong>${p.description}</div>`
+    ).join("");
+  }
+
+  function renderTypePills() {
+    const types = [...new Set(state.plans.map(p => p.type))];
+    if (types.length <= 1) {
+      document.getElementById("type-pills").innerHTML = "";
+      return;
+    }
+    const pills = [`<button class="type-pill ${state.activeFilter === "all" ? "active" : ""}" data-filter="all" aria-label="Show all plans">All</button>`];
+    const labels = { fiber: "Fios Fiber", "5g": "5G Home", lte: "LTE Home" };
+    types.forEach(t => {
+      pills.push(`<button class="type-pill ${state.activeFilter === t ? "active" : ""}" data-filter="${t}" aria-label="Show ${labels[t] || t} plans">${labels[t] || t}</button>`);
+    });
+    document.getElementById("type-pills").innerHTML = pills.join("");
+    document.querySelectorAll(".type-pill").forEach(btn => {
+      btn.addEventListener("click", () => {
+        state.activeFilter = btn.dataset.filter;
+        renderTypePills();
+        renderPlans();
+      });
+    });
+  }
+
+  function renderPlans() {
+    let filtered = state.plans;
+    if (state.activeFilter !== "all") {
+      filtered = filtered.filter(p => p.type === state.activeFilter);
+    }
+    const popularId = filtered.find(p => p.download_mbps >= 1000)?.id || filtered[0]?.id;
+    const grid = document.getElementById("plans-grid");
+    grid.innerHTML = filtered.map(plan => {
+      const promos = state.promotions.filter(pr => pr.eligible_plans.includes(plan.id));
+      const isSelected = state.selectedPlanId === plan.id;
+      return `
+        <div class="plan-card ${isSelected ? "selected" : ""}" data-plan-id="${plan.id}" tabindex="0" role="button" aria-label="Select ${plan.name}">
+          ${plan.id === popularId ? '<div class="popular-badge">Popular</div>' : ""}
+          <div class="plan-name">${plan.name}</div>
+          <div class="plan-speed">
+            <span class="speed-value">${plan.download_mbps >= 1000 ? (plan.download_mbps / 1000).toFixed(plan.download_mbps % 1000 ? 1 : 0) + " Gbps" : plan.download_mbps + " Mbps"}</span>
+            download${plan.upload_mbps ? ` / ${plan.upload_mbps >= 1000 ? (plan.upload_mbps / 1000) + " Gbps" : plan.upload_mbps + " Mbps"} upload` : ""}
+          </div>
+          <div class="plan-prices">
+            <div class="price-main">
+              <span class="currency">$</span>${plan.price_with_mobile.toFixed(2)}<span class="period">/mo</span>
+            </div>
+            ${plan.price_base !== plan.price_with_mobile ? `<div class="price-original">$${plan.price_base.toFixed(2)}/mo</div>` : ""}
+          </div>
+          <div class="price-note">With Auto Pay + Verizon Mobile. Taxes & fees extra.</div>
+          <div class="plan-tags">
+            <span class="tag">No contract</span>
+            ${plan.includes_router ? '<span class="tag">Router included</span>' : ""}
+            ${plan.includes_whole_home_wifi ? '<span class="tag">Whole-Home Wi-Fi</span>' : ""}
+            ${plan.data_cap === null ? '<span class="tag">No data caps</span>' : ""}
+            ${plan.gift_card_amount > 0 ? `<span class="tag promo">$${plan.gift_card_amount} Gift Card</span>` : ""}
+            ${promos.map(pr => `<span class="tag promo">${pr.title}</span>`).join("")}
+          </div>
+          <div class="plan-best-for">Best for: ${plan.best_for}</div>
+          <button class="plan-select-btn" aria-label="Select ${plan.name}">${isSelected ? "Selected" : "Select Plan"}</button>
+        </div>`;
+    }).join("");
+
+    grid.querySelectorAll(".plan-card").forEach(card => {
+      const handler = () => {
+        const planId = card.dataset.planId;
+        state.selectedPlanId = planId;
+        state.selectedPerks = [];
+        renderPlans();
+        renderCalculator();
+        updateModelContext({
+          selected_plan: state.plans.find(p => p.id === planId),
+          action: "plan_selected"
+        });
+      };
+      card.addEventListener("click", handler);
+      card.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handler(); } });
+    });
+  }
+
+  function renderCalculator() {
+    const calc = document.getElementById("calculator");
+    const plan = state.plans.find(p => p.id === state.selectedPlanId);
+    if (!plan) { calc.classList.remove("visible"); return; }
+    calc.classList.add("visible");
+
+    const hasFreePerk = plan.perks.some(p => p.includes("perk on us"));
+
+    calc.innerHTML = `
+      <div class="calc-title">Cost Calculator &mdash; <span class="calc-plan-name">${plan.name}</span></div>
+      <div class="toggle-row">
+        <span class="toggle-label">I have Verizon Mobile</span>
+        <label class="toggle">
+          <input type="checkbox" id="mobile-toggle" ${state.hasMobile ? "checked" : ""} aria-label="I have Verizon Mobile">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      ${state.addOnPerks.length > 0 ? `
+        <div class="perks-section">
+          <div class="perks-title">Add-on Perks ${hasFreePerk ? "(first perk free!)" : ""}</div>
+          ${state.addOnPerks.map((perk, i) => {
+            const isFree = hasFreePerk && state.selectedPerks.indexOf(perk.name) === 0 && state.selectedPerks.length > 0
+              ? true
+              : hasFreePerk && state.selectedPerks.length === 0 && i === state.selectedPerks.length;
+            const checked = state.selectedPerks.includes(perk.name);
+            return `<div class="perk-row">
+              <input type="checkbox" id="perk-${i}" data-perk="${perk.name}" ${checked ? "checked" : ""} aria-label="${perk.name}">
+              <label for="perk-${i}">${perk.name}</label>
+              <span class="perk-price">$${perk.price.toFixed(2)}/mo</span>
+            </div>`;
+          }).join("")}
+        </div>` : ""}
+      <div class="cost-summary" id="cost-summary"></div>
+      <button class="plan-select-btn" id="order-btn" style="margin-top:12px;" aria-label="Continue to order">Continue to Order</button>
+    `;
+
+    document.getElementById("mobile-toggle").addEventListener("change", (e) => {
+      state.hasMobile = e.target.checked;
+      updateCostSummary();
+    });
+
+    calc.querySelectorAll('input[data-perk]').forEach(cb => {
+      cb.addEventListener("change", () => {
+        if (cb.checked) {
+          state.selectedPerks.push(cb.dataset.perk);
+        } else {
+          state.selectedPerks = state.selectedPerks.filter(p => p !== cb.dataset.perk);
+        }
+        updateCostSummary();
+      });
+    });
+
+    document.getElementById("order-btn").addEventListener("click", () => {
+      callTool("start_order", {
+        plan_id: state.selectedPlanId,
+        address: state.address || "Address not provided",
+        zip_code: state.address.match(/\d{5}/)?.[0] || "00000",
+        has_verizon_mobile: state.hasMobile,
+        selected_perks: state.selectedPerks
+      });
+    });
+
+    updateCostSummary();
+  }
+
+  function updateCostSummary() {
+    const plan = state.plans.find(p => p.id === state.selectedPlanId);
+    if (!plan) return;
+
+    const base = plan.price_base;
+    const mobileDiscount = state.hasMobile ? (plan.price_base - plan.price_with_mobile) : 0;
+    const priceAfterDiscount = base - mobileDiscount;
+
+    const hasFreePerk = plan.perks.some(p => p.includes("perk on us"));
+    let perkTotal = 0;
+    state.selectedPerks.forEach((name, idx) => {
+      const perk = state.addOnPerks.find(p => p.name === name);
+      if (perk) {
+        if (hasFreePerk && idx === 0) { /* free */ }
+        else perkTotal += perk.price;
+      }
+    });
+
+    const total = priceAfterDiscount + perkTotal;
+    const yearSavings = mobileDiscount * 12;
+
+    const el = document.getElementById("cost-summary");
+    el.innerHTML = `
+      <div class="cost-line"><span>Base price</span><span>$${base.toFixed(2)}/mo</span></div>
+      ${mobileDiscount > 0 ? `<div class="cost-line discount"><span>Mobile discount</span><span>-$${mobileDiscount.toFixed(2)}/mo</span></div>` : ""}
+      ${perkTotal > 0 ? `<div class="cost-line"><span>Add-on perks</span><span>+$${perkTotal.toFixed(2)}/mo</span></div>` : ""}
+      ${hasFreePerk && state.selectedPerks.length > 0 ? `<div class="cost-line discount"><span>Free perk included</span><span>-$${state.addOnPerks.find(p => p.name === state.selectedPerks[0])?.price.toFixed(2) || "0.00"}/mo</span></div>` : ""}
+      <div class="cost-line total"><span>Monthly Total</span><span>$${total.toFixed(2)}/mo</span></div>
+      ${yearSavings > 0 ? `<div class="savings-callout">You save $${yearSavings.toFixed(2)}/year with Verizon Mobile!</div>` : ""}
+      ${plan.gift_card_amount > 0 ? `<div class="savings-callout">Plus $${plan.gift_card_amount} Amazon Gift Card!</div>` : ""}
+    `;
+
+    updateModelContext({
+      selected_plan: plan.name,
+      monthly_total: total,
+      has_mobile: state.hasMobile,
+      perks: state.selectedPerks
+    });
+  }
+
+  function renderOrderSummary(data) {
+    const el = document.getElementById("order-summary");
+    el.classList.add("visible");
+    const os = data.order_summary;
+    const disclaimers = data.disclaimers || [];
+
+    el.innerHTML = `
+      <div class="order-card">
+        <div class="order-title">Order Summary</div>
+        <div class="order-detail"><strong>${os.plan}</strong> (${os.type.toUpperCase()})</div>
+        <div class="order-detail">${os.speed}</div>
+        <div class="order-detail">Address: ${os.address}</div>
+        <div class="order-detail" style="margin-top:8px;"><strong>Monthly Total: $${os.monthly_total.toFixed(2)}/mo</strong></div>
+        ${os.gift_card ? `<div class="order-detail" style="color:#00AA00;">${os.gift_card}</div>` : ""}
+        ${os.promotions.length > 0 ? `<div class="order-detail">Promotions: ${os.promotions.join(", ")}</div>` : ""}
+        <ul class="order-includes">
+          ${(os.includes || []).map(i => `<li>${i}</li>`).join("")}
+        </ul>
+        <a href="${data.checkout_url}" target="_blank" rel="noopener noreferrer" class="checkout-btn" aria-label="Continue on Verizon.com">
+          Continue on Verizon.com &rarr;
+        </a>
+        <div class="disclaimer">${disclaimers.join(" ")}</div>
+      </div>
+    `;
+
+    el.scrollIntoView({ behavior: "smooth" });
+  }
+
+  // Initial render — if data is already available via structuredContent
+  setTimeout(() => {
+    if (state.plans.length === 0) {
+      document.getElementById("loading").innerHTML =
+        '<div class="spinner"></div>Ask about Verizon plans to get started!';
+    }
+  }, 2000);
+})();
+</script>
+</body>
+</html>

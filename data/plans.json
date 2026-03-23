@@ -1,0 +1,182 @@
+{
+  "plans": [
+    {
+      "id": "fios-300",
+      "name": "Fios 300 Mbps",
+      "type": "fiber",
+      "download_mbps": 300,
+      "upload_mbps": 300,
+      "price_base": 49.99,
+      "price_with_mobile": 34.99,
+      "price_lock_years": 3,
+      "contract_required": false,
+      "data_cap": null,
+      "includes_router": true,
+      "includes_whole_home_wifi": false,
+      "gift_card_amount": 100,
+      "perks": ["1 perk on us (up to $10/mo value)"],
+      "best_for": "Individuals, light streaming, remote work"
+    },
+    {
+      "id": "fios-500",
+      "name": "Fios 500 Mbps",
+      "type": "fiber",
+      "download_mbps": 500,
+      "upload_mbps": 500,
+      "price_base": 64.99,
+      "price_with_mobile": 49.99,
+      "price_lock_years": 3,
+      "contract_required": false,
+      "data_cap": null,
+      "includes_router": true,
+      "includes_whole_home_wifi": false,
+      "gift_card_amount": 100,
+      "perks": ["1 perk on us (up to $10/mo value)"],
+      "best_for": "Small families, multiple devices, HD streaming"
+    },
+    {
+      "id": "fios-1gig",
+      "name": "Fios 1 Gig",
+      "type": "fiber",
+      "download_mbps": 1000,
+      "upload_mbps": 1000,
+      "price_base": 74.99,
+      "price_with_mobile": 59.99,
+      "price_lock_years": 5,
+      "contract_required": false,
+      "data_cap": null,
+      "includes_router": true,
+      "includes_whole_home_wifi": true,
+      "gift_card_amount": 200,
+      "perks": [
+        "1 perk on us (up to $10/mo value)",
+        "Whole-Home Wi-Fi included",
+        "2 TB cloud storage"
+      ],
+      "best_for": "Large families, 4K streaming, serious gaming"
+    },
+    {
+      "id": "fios-2gig",
+      "name": "Fios 2 Gig",
+      "type": "fiber",
+      "download_mbps": 2300,
+      "upload_mbps": 1000,
+      "price_base": 84.99,
+      "price_with_mobile": 69.99,
+      "price_lock_years": 5,
+      "contract_required": false,
+      "data_cap": null,
+      "includes_router": true,
+      "includes_whole_home_wifi": true,
+      "gift_card_amount": 200,
+      "perks": [
+        "1 perk on us (up to $10/mo value)",
+        "Whole-Home Wi-Fi included",
+        "2 TB cloud storage",
+        "Router upgrade program"
+      ],
+      "best_for": "Power users, smart homes, home offices with heavy uploads"
+    },
+    {
+      "id": "5g-home",
+      "name": "5G Home",
+      "type": "5g",
+      "download_mbps": 300,
+      "upload_mbps": null,
+      "price_base": 60.00,
+      "price_with_mobile": 35.00,
+      "price_lock_years": 3,
+      "contract_required": false,
+      "data_cap": null,
+      "includes_router": true,
+      "includes_whole_home_wifi": false,
+      "gift_card_amount": 100,
+      "perks": [],
+      "best_for": "Budget-friendly, no-install option, renters"
+    },
+    {
+      "id": "5g-home-plus",
+      "name": "5G Home Plus",
+      "type": "5g",
+      "download_mbps": 1000,
+      "upload_mbps": null,
+      "price_base": 70.00,
+      "price_with_mobile": 45.00,
+      "price_lock_years": 3,
+      "contract_required": false,
+      "data_cap": null,
+      "includes_router": true,
+      "includes_whole_home_wifi": true,
+      "gift_card_amount": 100,
+      "perks": ["Whole-Home Wi-Fi included"],
+      "best_for": "Families wanting wireless simplicity with strong speed"
+    },
+    {
+      "id": "5g-home-ultimate",
+      "name": "5G Home Ultimate",
+      "type": "5g",
+      "download_mbps": 1000,
+      "upload_mbps": null,
+      "price_base": 85.00,
+      "price_with_mobile": 60.00,
+      "price_lock_years": 3,
+      "contract_required": false,
+      "data_cap": null,
+      "includes_router": true,
+      "includes_whole_home_wifi": true,
+      "gift_card_amount": 200,
+      "perks": [
+        "Whole-Home Wi-Fi included",
+        "Apple One \u2014 6 months free, then $15/mo",
+        "Router upgrade program"
+      ],
+      "best_for": "Top-tier wireless, Apple ecosystem users, no-compromise speed"
+    },
+    {
+      "id": "lte-home",
+      "name": "LTE Home Internet",
+      "type": "lte",
+      "download_mbps": 50,
+      "upload_mbps": null,
+      "price_base": 40.00,
+      "price_with_mobile": 35.00,
+      "price_lock_years": 0,
+      "contract_required": false,
+      "data_cap": null,
+      "includes_router": true,
+      "includes_whole_home_wifi": false,
+      "gift_card_amount": 0,
+      "perks": [],
+      "best_for": "Rural areas, basic browsing and email"
+    }
+  ],
+  "add_on_perks": [
+    { "name": "Netflix & Max (With Ads)", "price": 10.00 },
+    { "name": "Disney+, Hulu & ESPN+ (With Ads)", "price": 10.00 },
+    { "name": "YouTube Premium", "price": 10.00 },
+    { "name": "Apple Music Family", "price": 10.00 },
+    { "name": "Apple One", "price": 15.00 },
+    { "name": "Google One AI Premium", "price": 10.00 },
+    { "name": "Unlimited Cloud Storage", "price": 10.00 }
+  ],
+  "current_promotions": [
+    {
+      "title": "Samsung 43\" QLED TV or Galaxy Tab S10 FE",
+      "description": "Choose a free Samsung 43-inch QLED TV (plus 6 months Apple One) OR a Samsung Galaxy Tab S10 FE 5G OR $15/mo off for 3 years. Available with Fios 1 Gig and 2 Gig.",
+      "eligible_plans": ["fios-1gig", "fios-2gig"],
+      "expires": "2026-04-01"
+    },
+    {
+      "title": "Amazon Gift Card (up to $200)",
+      "description": "$200 gift card with Fios 1 Gig, 2 Gig, or 5G Home Ultimate. $100 with other Fios and 5G Home plans.",
+      "eligible_plans": ["fios-300", "fios-500", "fios-1gig", "fios-2gig", "5g-home", "5g-home-plus", "5g-home-ultimate"],
+      "expires": "2026-04-01"
+    },
+    {
+      "title": "Apple One \u2014 6 Months Free",
+      "description": "Get Apple One for 6 months on us with a new 5G Home Ultimate plan. Then $15/mo after.",
+      "eligible_plans": ["5g-home-ultimate"],
+      "expires": "2026-04-01"
+    }
+  ]
+}

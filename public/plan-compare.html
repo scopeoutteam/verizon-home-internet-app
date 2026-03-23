@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verizon Plan Comparison</title>
+<style>
+  :root {
+    --vz-red: #EE0000;
+    --vz-red-dark: #CC0000;
+    --bg: #000000;
+    --text: #FFFFFF;
+    --text-muted: #959595;
+    --card-bg: #1A1A1A;
+    --card-border: #333333;
+    --badge-bg: #2A2A2A;
+    --row-alt: #111111;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #FFFFFF;
+      --text: #000000;
+      --text-muted: #6F7171;
+      --card-bg: #F6F6F6;
+      --card-border: #D8DADA;
+      --badge-bg: #D8DADA;
+      --row-alt: #F0F0F0;
+    }
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Verizon NHG DS", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 16px;
+    line-height: 1.5;
+    font-size: 14px;
+  }
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--vz-red);
+  }
+  .header h1 { font-size: 18px; font-weight: 700; }
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .compare-table th, .compare-table td {
+    padding: 10px 12px;
+    text-align: left;
+    font-size: 13px;
+    border-bottom: 1px solid var(--card-border);
+    vertical-align: top;
+  }
+  .compare-table th {
+    background: var(--card-bg);
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: sticky;
+    top: 0;
+  }
+  .compare-table th.plan-header {
+    text-transform: none;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 0;
+  }
+  .compare-table tr:nth-child(even) td { background: var(--row-alt); }
+  .compare-table .label-col {
+    font-weight: 600;
+    color: var(--text-muted);
+    white-space: nowrap;
+    width: 120px;
+    min-width: 100px;
+  }
+  .compare-table .price-cell {
+    font-size: 18px;
+    font-weight: 700;
+  }
+  .compare-table .price-cell .period {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text-muted);
+  }
+  .compare-table .price-cell .original {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-decoration: line-through;
+    display: block;
+  }
+  .check { color: #00AA00; font-weight: bold; }
+  .cross { color: var(--text-muted); }
+  .tag {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: var(--badge-bg);
+    color: var(--text);
+    margin: 2px 2px 2px 0;
+  }
+  .tag.promo { background: #3D1200; color: #FF9966; }
+  @media (prefers-color-scheme: light) {
+    .tag.promo { background: #FFF0E6; color: #CC4400; }
+  }
+  .select-btn {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 8px 16px;
+    background: var(--vz-red);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .select-btn:hover, .select-btn:focus { background: var(--vz-red-dark); }
+  .select-btn:focus { outline: 2px solid var(--vz-red); outline-offset: 2px; }
+  .disclaimer {
+    margin-top: 12px;
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+  .loading {
+    text-align: center;
+    padding: 40px 0;
+    color: var(--text-muted);
+  }
+  .loading .spinner {
+    width: 32px; height: 32px;
+    border: 3px solid var(--card-border);
+    border-top-color: var(--vz-red);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 12px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .winner { background: rgba(238, 0, 0, 0.08); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+    <rect width="28" height="28" rx="6" fill="#EE0000"/>
+    <path d="M6 14.5L11 19.5L22 8.5" stroke="#FFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <h1>Plan Comparison</h1>
+</div>
+
+<div id="loading" class="loading">
+  <div class="spinner"></div>
+  Loading comparison...
+</div>
+
+<div id="table-container" style="display:none; overflow-x:auto;"></div>
+<div class="disclaimer" id="disclaimer" style="display:none;">
+  With Auto Pay + paper-free billing. Taxes & fees extra. Subject to credit approval.
+</div>
+
+<script>
+(function() {
+  window.addEventListener("message", (event) => {
+    const data = event.data;
+    if (!data) return;
+    if (data.method === "ui/notifications/tool-result" && data.params) {
+      const sc = data.params.structuredContent || data.params;
+      if (sc.plans && sc.fields) {
+        renderComparison(sc.plans, sc.fields);
+      }
+    }
+  });
+
+  function callTool(name, args) {
+    window.parent.postMessage({
+      jsonrpc: "2.0",
+      method: "tools/call",
+      params: { name, arguments: args },
+      id: Date.now()
+    }, "*");
+  }
+
+  function updateModelContext(ctx) {
+    window.parent.postMessage({
+      jsonrpc: "2.0",
+      method: "ui/update-model-context",
+      params: { context: ctx }
+    }, "*");
+  }
+
+  const fieldLabels = {
+    name: "Plan",
+    type: "Connection",
+    download_mbps: "Download",
+    upload_mbps: "Upload",
+    price_base: "Price",
+    price_with_mobile: "With Mobile",
+    price_lock_years: "Price Lock",
+    data_cap: "Data Cap",
+    includes_router: "Router",
+    includes_whole_home_wifi: "Whole-Home Wi-Fi",
+    gift_card_amount: "Gift Card",
+    perks: "Perks",
+    best_for: "Best For"
+  };
+
+  function formatValue(field, value, plan) {
+    if (value === null || value === undefined) return '<span class="cross">&mdash;</span>';
+    if (field === "download_mbps" || field === "upload_mbps") {
+      return value >= 1000 ? `${(value / 1000).toFixed(value % 1000 ? 1 : 0)} Gbps` : `${value} Mbps`;
+    }
+    if (field === "price_base") {
+      return `<div class="price-cell">$${plan.price_with_mobile.toFixed(2)}<span class="period">/mo</span>${plan.price_base !== plan.price_with_mobile ? `<span class="original">$${plan.price_base.toFixed(2)}/mo</span>` : ""}</div>`;
+    }
+    if (field === "price_with_mobile") return `$${value.toFixed(2)}/mo`;
+    if (field === "price_lock_years") return value > 0 ? `${value} years` : "None";
+    if (field === "data_cap") return value === null ? '<span class="check">Unlimited</span>' : value;
+    if (field === "includes_router" || field === "includes_whole_home_wifi") {
+      return value ? '<span class="check">&#10003; Yes</span>' : '<span class="cross">&#10007; No</span>';
+    }
+    if (field === "gift_card_amount") return value > 0 ? `<span class="tag promo">$${value}</span>` : '<span class="cross">&mdash;</span>';
+    if (field === "perks") {
+      return Array.isArray(value) && value.length > 0 ? value.map(p => `<span class="tag">${p}</span>`).join(" ") : '<span class="cross">None</span>';
+    }
+    if (field === "type") {
+      const labels = { fiber: "Fios Fiber", "5g": "5G Home", lte: "LTE" };
+      return labels[value] || value;
+    }
+    return String(value);
+  }
+
+  function renderComparison(plans, fields) {
+    document.getElementById("loading").style.display = "none";
+    const container = document.getElementById("table-container");
+    container.style.display = "block";
+    document.getElementById("disclaimer").style.display = "block";
+
+    // Skip price_with_mobile as a separate row (shown inside price_base)
+    const displayFields = fields.filter(f => f !== "price_with_mobile" && f !== "name");
+
+    let html = '<table class="compare-table">';
+    // Header row with plan names
+    html += '<tr><th class="label-col"></th>';
+    plans.forEach(p => {
+      html += `<th class="plan-header">${p.name}</th>`;
+    });
+    html += '</tr>';
+
+    // Data rows
+    displayFields.forEach(field => {
+      html += '<tr>';
+      html += `<td class="label-col">${fieldLabels[field] || field}</td>`;
+      plans.forEach(plan => {
+        // Highlight best value
+        html += `<td>${formatValue(field, plan[field], plan)}</td>`;
+      });
+      html += '</tr>';
+    });
+
+    // Select button row
+    html += '<tr><td class="label-col"></td>';
+    plans.forEach(p => {
+      html += `<td><button class="select-btn" data-plan-id="${p.id}" aria-label="Select ${p.name}">Select ${p.name}</button></td>`;
+    });
+    html += '</tr>';
+
+    html += '</table>';
+    container.innerHTML = html;
+
+    container.querySelectorAll(".select-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const plan = plans.find(p => p.id === btn.dataset.planId);
+        updateModelContext({
+          selected_plan: plan,
+          action: "plan_selected_from_comparison"
+        });
+      });
+    });
+  }
+
+  setTimeout(() => {
+    const loading = document.getElementById("loading");
+    if (loading.style.display !== "none") {
+      loading.innerHTML = '<div class="spinner"></div>Waiting for comparison data...';
+    }
+  }, 2000);
+})();
+</script>
+</body>
+</html>
