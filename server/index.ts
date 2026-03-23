@@ -499,6 +499,22 @@ app.get("/mcp", async (req, res) => {
     await transport.handleRequest(req, res);
     return;
   }
+  // For new SSE connections without a session, create one
+  const accept = req.headers.accept || "";
+  if (accept.includes("text/event-stream")) {
+    const transport = new StreamableHTTPServerTransport({
+      sessionIdGenerator: () => crypto.randomUUID(),
+    });
+    transport.onclose = () => {
+      const sid = (transport as any).sessionId;
+      if (sid) transports.delete(sid);
+    };
+    await server.connect(transport);
+    const sid = (transport as any).sessionId;
+    if (sid) transports.set(sid, transport);
+    await transport.handleRequest(req, res);
+    return;
+  }
   res.status(400).json({ error: "No session. Send a POST to /mcp first." });
 });
 
