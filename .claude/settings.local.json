@@ -6,7 +6,13 @@
       "Bash(xargs kill:*)",
       "Bash(curl -s -H \"ngrok-skip-browser-warning: true\" https://terrigenous-raymundo-hypertorrid.ngrok-free.dev/)",
       "Bash(curl -s -H \"ngrok-skip-browser-warning: true\" https://terrigenous-raymundo-hypertorrid.ngrok-free.dev/.well-known/test)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(gh repo:*)",
+      "Bash(brew list:*)",
+      "Bash(command -v render)",
+      "Bash(brew install:*)",
+      "Bash(render --version)",
+      "Bash(render whoami:*)"
     ]
   }
 }
