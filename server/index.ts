@@ -455,8 +455,8 @@ app.get("/", (_req, res) => {
 });
 
 // Domain verification for OpenAI
-app.get("/.well-known/:filename", (_req, res) => {
-  res.type("text/plain").send("ndQz8SMAVCMxLb5lfGnNkXbZ86hqKK4wCOwEN3lhYR8");
+app.get("/.well-known/openai-apps", (_req, res) => {
+  res.type("text/plain").send("tFY_ZjmS5o2O_YtKpgDCFfOmI9hJVtTqjGqv-jVcmKo");
 });
 
 // Serve static widget files
